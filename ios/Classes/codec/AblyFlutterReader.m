@@ -74,12 +74,12 @@ static AblyCodecDecoder readAblyFlutterEventMessage = ^AblyFlutterEventMessage*(
  A macro to reduce boilerplate code for each value read where the pattern is to
  use an explicitly received null from Dart (manifesting this side as a nil id)
  to indicate that this property should not be set.
- 
+
  The idea behind this pattern is that the default values for properties remain
  defined by the platform specific client library SDK, with values received from
  Dart only calling Objective-C property setters when they need to be explicitly
  set.
- 
+
  @note This pattern does not work in the scenario where a property has a non-nil
  id value by default, because our Dart code would be sending null to request
  that the property is cleared. If or when we come across this situation then
@@ -141,7 +141,7 @@ static AblyCodecDecoder readClientOptions = ^AblyFlutterClientOptions*(NSDiction
     // httpMaxRetryCount, realtimeRequestTimeout, fallbackRetryTimeout,
     // channelRetryTimeout, transportParams, asyncHttpThreadpoolSize, pushFullWait
     // track @ https://github.com/ably/ably-flutter/issues/14
-    
+
     AblyFlutterClientOptions *const co = [AblyFlutterClientOptions new];
     ON_VALUE(^(const id value) {
         [co initWithClientOptions: o hasAuthCallback: value];
@@ -156,24 +156,24 @@ static AblyCodecDecoder readClientOptions = ^AblyFlutterClientOptions*(NSDiction
     __block NSDate *issued = nil;
     __block NSString *capability = nil;
     __block NSString *clientId = nil;
-    
+
     ON_VALUE(^(const id value) { token = value; }, dictionary, TxTokenDetails_token);
     ON_VALUE(^(const id value) { expires = value; }, dictionary, TxTokenDetails_expires);
     ON_VALUE(^(const id value) { issued = value; }, dictionary, TxTokenDetails_issued);
     ON_VALUE(^(const id value) { capability = value; }, dictionary, TxTokenDetails_capability);
     ON_VALUE(^(const id value) { clientId = value; }, dictionary, TxTokenDetails_clientId);
-    
-    return [[ARTTokenDetails new] initWithToken:token expires:expires issued:issued capability:capability clientId:clientId];
+
+    return [[ARTTokenDetails alloc] initWithToken:token expires:expires issued:issued capability:capability clientId:clientId];
 }
 
 +(ARTTokenParams *)tokenParamsFromDictionary: (NSDictionary *) dictionary {
     __block NSString *clientId = nil;
     __block NSString *nonce = nil;
-    
+
     ON_VALUE(^(const id value) { clientId = value; }, dictionary, TxTokenParams_clientId);
     ON_VALUE(^(const id value) { nonce = value; }, dictionary, TxTokenParams_nonce);
-    
-    ARTTokenParams *const o = [[ARTTokenParams new] initWithClientId: clientId nonce: nonce];
+
+    ARTTokenParams *const o = [[ARTTokenParams alloc] initWithClientId: clientId nonce: nonce];
     READ_VALUE(o, capability, dictionary, TxTokenParams_capability);
     READ_VALUE(o, timestamp, dictionary, TxTokenParams_timestamp);
     ON_VALUE(^(const id value) {
@@ -210,7 +210,7 @@ static AblyCodecDecoder readTokenRequest = ^ARTTokenRequest*(NSDictionary *const
     ON_VALUE(^(const id value) { keyName = value; }, dictionary, TxTokenRequest_keyName);
 
     ARTTokenParams *const params = [AblyFlutterReader tokenParamsFromDictionary: dictionary];
-    return [[ARTTokenRequest new] initWithTokenParams:params
+    return [[ARTTokenRequest alloc] initWithTokenParams:params
                                               keyName:keyName
                                                 nonce:nonce
                                                   mac:mac];
